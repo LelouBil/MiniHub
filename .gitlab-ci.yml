@@ -1,0 +1,46 @@
+image: lotaryupdater:latest
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode -Dmaven.repo.local=.m2/repository"
+  MAVEN_OPTS: " "
+
+cache:
+  paths:
+  - .m2/repository/
+  - target/
+
+build:
+  stage: build
+  script:
+  - mvn $MAVEN_CLI_OPTS compile
+
+test:
+  stage: test
+  script:
+  - mvn $MAVEN_CLI_OPTS test
+
+deploy_mvn:
+  stage: deploy
+  script:
+  - mvn $MAVEN_CLI_OPTS deploy
+  only:
+  - master
+
+deploy_test:
+  stage: deploy
+  script:
+  - echo "Push vers le serveur dev"
+  - lotarydeploy dev
+  environment:
+    name: Dev
+
+deploy_prod:
+  stage: deploy
+  script:
+  - echo "Push vers les serveurs"
+  - lotarydeploy prod
+  environment:
+    name: Prod
+  when: manual
+  only:
+  - master

@@ -1,0 +1,11 @@
+spawn: [lobby;0;100;0;90;0]
+minigames:
+  - STAINED_GLASS_PANE;1;name=
+  - STAINED_GLASS_PANE;1;name=
+  - STAINED_GLASS_PANE;1;name=
+  - BEDROCK;1;name=§7§oComing soon...~ench=false=1
+  - FLINT_AND_STEEL;1;name=§6LotaWar~lore=§3Viens jouer !-->[lobby;-88;97;91;-30;0]
+  - BEDROCK;1;name=§7§oComing soon...~ench=false=1
+  - STAINED_GLASS_PANE;1;name=
+  - STAINED_GLASS_PANE;1;name=
+  - STAINED_GLASS_PANE;1;name=

@@ -1,0 +1,9 @@
+name: MiniHub
+version: ${project.version}
+main: fr.leloubil.minihub.MiniHub
+prefix: MiniHub
+authors: [LelouBil]
+website: lotary.net
+commands:
+  hub:
+  leave:

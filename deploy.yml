@@ -1,0 +1,10 @@
+##Liste des serveurs sur lesquels deploy le jar
+servers:
+  - "Mini-Jeux"
+
+##true si il faut redemarrer les serveur apres (default : false)
+##restart: true
+
+##Nom de l'ancien fichier a supprimer ou début du nom du fichier a supprimer
+##(du coup "MiniHub" supprime toutes les versions de MiniHub déja dans le dossier plugins)
+prefix: "MiniHub"
