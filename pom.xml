@@ -68,18 +68,18 @@
     <repositories>
     <repository>
         <id>LotaMaven</id>
-        <url>http://admin.lotary.net:8989/repository/LotaMaven/</url>
+        <url>https://maven.lotary.net/repository/LotaMaven/</url>
     </repository>
 </repositories>
 
     <distributionManagement>
         <snapshotRepository>
             <id>LotaMaven-Snapshots</id>
-            <url>http://admin.lotary.net:8989/repository/LotaMaven-Snapshots/</url>
+            <url>https://maven.lotary.net/repository/LotaMaven-Snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>LotaMaven-Releases</id>
-            <url>http://admin.lotary.net:8989/repository/LotaMaven-Releases/</url>
+            <url>https://maven.lotary.net/repository/LotaMaven-Releases/</url>
         </repository>
     </distributionManagement>
 
@@ -111,13 +111,7 @@
         <dependency>
             <groupId>net.lotary</groupId>
             <artifactId>LotaryAPI</artifactId>
-            <version>4.6-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>fr.leloubil</groupId>
-            <artifactId>LotaWars</artifactId>
-            <version>0.8.5-SNAPSHOT</version>
+            <version>4.8.3-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
