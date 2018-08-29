@@ -1,6 +1,9 @@
 package fr.leloubil.minihub;
 
 import fr.leloubil.minihub.interfaces.Game;
+import net.lotary.modération.events.ModJoinEvent;
+import net.lotary.modération.events.ModLeaveEvent;
+import net.lotary.modération.mods.ModManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -121,6 +124,16 @@ public class Listeners implements Listener {
         }
     }
 
+    @EventHandler
+    public void onModJoin(ModJoinEvent e){
+        updateHideShow();
+    }
+
+    @EventHandler
+    public void onModLeave(ModLeaveEvent e){
+        updateHideShow();
+    }
+
     public static void updateHideShow() {
         Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
         for (Player player : players) {
@@ -130,9 +143,13 @@ public class Listeners implements Listener {
             if(MiniHub.games.containsKey(player.getUniqueId())){
                 player.getWorld().getPlayers().forEach(player::hidePlayer);
                 if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getHidelobmush())){
-                    MiniHub.games.keySet().forEach(u -> player.showPlayer(Bukkit.getPlayer(u)));
+                    MiniHub.games.keySet().forEach(u -> {
+                        if(!ModManager.mods.containsKey(Bukkit.getPlayer(u)))player.showPlayer(Bukkit.getPlayer(u));
+                    });
                 }else if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getShowlobmush())){
-                    MiniHub.games.get(player.getUniqueId()).getPlayers().forEach(player::showPlayer);
+                    MiniHub.games.get(player.getUniqueId()).getPlayers().forEach(player1 -> {
+                        if(!ModManager.mods.containsKey(player1)) player.showPlayer(player1);
+                    });
                 }
             }
             else {
@@ -153,8 +170,8 @@ public class Listeners implements Listener {
         Bukkit.getWorlds().forEach(w -> {
             if(w.getName().equals(worldName)) {
                 w.getPlayers().forEach(player -> {
-                    player.showPlayer(p);
-                    p.showPlayer(player);
+                    if(!ModManager.mods.containsKey(p))player.showPlayer(p);
+                    if(!ModManager.mods.containsKey(player))p.showPlayer(player);
                 });
             }
             else {
@@ -199,8 +216,7 @@ public class Listeners implements Listener {
         }
         if(e.getItem().isSimilar(MiniHub.getShowlobmush())){
             e.getPlayer().getWorld().getPlayers().forEach(p -> {
-                if(!MiniHub.games.containsKey(p.getUniqueId()))
-                e.getPlayer().showPlayer(p);
+                if(!MiniHub.games.containsKey(p.getUniqueId())) e.getPlayer().showPlayer(p);
             });
             e.getPlayer().setItemInHand(MiniHub.getHidelobmush());
             return;
@@ -215,7 +231,7 @@ public class Listeners implements Listener {
         if(e.getItem().isSimilar(MiniHub.getShowmush())){
             if(! MiniHub.games.containsKey(e.getPlayer().getUniqueId())) return;
             Game l =  MiniHub.games.get(e.getPlayer().getUniqueId());
-            l.showPlayer(e.getPlayer());
+            if(!ModManager.mods.containsKey(e.getPlayer()))l.showPlayer(e.getPlayer());
             e.getPlayer().setItemInHand(MiniHub.getHidemush());
         }
         if(e.getItem().isSimilar(MiniHub.getToUp())){
