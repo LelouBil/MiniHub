@@ -57,20 +57,4 @@ public abstract class Game {
      * @return una arrayList des joueurs
      */
     public abstract ArrayList<Player> getPlayers();
-
-    /**
-     * Méthode utilisée pour masquer les joueurs qu'un joueur ne devrait pas voir
-     * @param p Le joueur
-     */
-    public void hidePlayer(Player p){
-        fr.leloubil.minihub.Listeners.perWorld(p);
-    }
-
-    /**
-     * Méthode pour que le joueur voit les autres joueurs qu'il doit voir
-     * @param p le Joueur
-     */
-    public void showPlayer(Player p){
-        fr.leloubil.minihub.Listeners.perWorld(p);
-    }
 }
