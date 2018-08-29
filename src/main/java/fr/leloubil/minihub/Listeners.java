@@ -139,14 +139,16 @@ public class Listeners implements Listener {
         for (Player player : players) {
             perWorld(player);
         }
+
         Bukkit.getWorld("lobby").getPlayers().forEach(player -> {
+
             if(MiniHub.games.containsKey(player.getUniqueId())){
                 player.getWorld().getPlayers().forEach(player::hidePlayer);
-                if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getHidelobmush())){
+                if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getHidemush())){
                     MiniHub.games.keySet().forEach(u -> {
                         if(!ModManager.mods.containsKey(Bukkit.getPlayer(u)))player.showPlayer(Bukkit.getPlayer(u));
                     });
-                }else if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getShowlobmush())){
+                }else if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getShowmush())){
                     MiniHub.games.get(player.getUniqueId()).getPlayers().forEach(player1 -> {
                         if(!ModManager.mods.containsKey(player1)) player.showPlayer(player1);
                     });
@@ -210,29 +212,23 @@ public class Listeners implements Listener {
             return;
         }
         if(e.getItem().isSimilar(MiniHub.getHidelobmush())){
-            e.getPlayer().getWorld().getPlayers().forEach(p -> e.getPlayer().hidePlayer(p));
             e.getPlayer().setItemInHand(MiniHub.getShowlobmush());
+            updateHideShow();
             return;
         }
         if(e.getItem().isSimilar(MiniHub.getShowlobmush())){
-            e.getPlayer().getWorld().getPlayers().forEach(p -> {
-                if(!MiniHub.games.containsKey(p.getUniqueId())) e.getPlayer().showPlayer(p);
-            });
             e.getPlayer().setItemInHand(MiniHub.getHidelobmush());
+            updateHideShow();
             return;
         }
         if(e.getItem().isSimilar(MiniHub.getHidemush())){
-            if(!MiniHub.games.containsKey(e.getPlayer().getUniqueId())) return;
-            Game l = MiniHub.games.get(e.getPlayer().getUniqueId());
-            l.hidePlayer(e.getPlayer());
             e.getPlayer().setItemInHand(MiniHub.getShowmush());
+            updateHideShow();
             return;
         }
         if(e.getItem().isSimilar(MiniHub.getShowmush())){
-            if(! MiniHub.games.containsKey(e.getPlayer().getUniqueId())) return;
-            Game l =  MiniHub.games.get(e.getPlayer().getUniqueId());
-            if(!ModManager.mods.containsKey(e.getPlayer()))l.showPlayer(e.getPlayer());
             e.getPlayer().setItemInHand(MiniHub.getHidemush());
+            updateHideShow();
         }
         if(e.getItem().isSimilar(MiniHub.getToUp())){
             if(! MiniHub.games.containsKey(e.getPlayer().getUniqueId())) return;
