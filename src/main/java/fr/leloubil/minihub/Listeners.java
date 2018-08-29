@@ -146,11 +146,11 @@ public class Listeners implements Listener {
                 player.getWorld().getPlayers().forEach(player::hidePlayer);
                 if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getHidemush())){
                     MiniHub.games.keySet().forEach(u -> {
-                        if(!ModManager.mods.containsKey(Bukkit.getPlayer(u)))player.showPlayer(Bukkit.getPlayer(u));
+                        if(!ModManager.mods.get(Bukkit.getPlayer(u)).isInModerationMod())player.showPlayer(Bukkit.getPlayer(u));
                     });
                 }else if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getShowmush())){
                     MiniHub.games.get(player.getUniqueId()).getPlayers().forEach(player1 -> {
-                        if(!ModManager.mods.containsKey(player1)) player.showPlayer(player1);
+                        if(!ModManager.mods.get(player1).isInModerationMod()) player.showPlayer(player1);
                     });
                 }
             }
@@ -172,8 +172,8 @@ public class Listeners implements Listener {
         Bukkit.getWorlds().forEach(w -> {
             if(w.getName().equals(worldName)) {
                 w.getPlayers().forEach(player -> {
-                    if(!ModManager.mods.containsKey(p))player.showPlayer(p);
-                    if(!ModManager.mods.containsKey(player))p.showPlayer(player);
+                    if(!ModManager.mods.get(p).isInModerationMod())player.showPlayer(p);
+                    if(!ModManager.mods.get(player).isInModerationMod())p.showPlayer(player);
                 });
             }
             else {
