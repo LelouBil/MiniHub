@@ -9,9 +9,17 @@ cache:
   - .m2/repository/
   - target/
 
+stages:
+- build
+- test
+- mvn_deploy
+- lotary_deploy
+
+
 build:
   stage: build
   script:
+  - rm -rf target/*
   - mvn $MAVEN_CLI_OPTS compile
 
 test:
@@ -20,14 +28,14 @@ test:
   - mvn $MAVEN_CLI_OPTS test
 
 deploy_mvn:
-  stage: deploy
+  stage: mvn_deploy
   script:
   - mvn $MAVEN_CLI_OPTS deploy
   only:
   - master
 
 deploy_test:
-  stage: deploy
+  stage: lotary_deploy
   script:
   - echo "Push vers le serveur dev"
   - lotarydeploy dev
@@ -35,12 +43,12 @@ deploy_test:
     name: Dev
 
 deploy_prod:
-  stage: deploy
+  stage: lotary_deploy
   script:
   - echo "Push vers les serveurs"
   - lotarydeploy prod
   environment:
     name: Prod
-  when: manual
   only:
   - master
+  - tags

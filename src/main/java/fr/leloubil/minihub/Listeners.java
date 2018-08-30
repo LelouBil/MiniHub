@@ -80,7 +80,7 @@ public class Listeners implements Listener {
         if(e.getEntity().getLocation().getWorld().getName().equals("lobby")) e.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onDisconnect(PlayerQuitEvent e){
         UUID id = e.getPlayer().getUniqueId();
         e.getPlayer().getInventory().clear();
@@ -117,7 +117,6 @@ public class Listeners implements Listener {
         p.setHealth(20);
         p.setFoodLevel(20);
         updateHideShow();
-        p.getWorld().getPlayers().forEach(Listeners::perWorld);
         e.getPlayer().setGameMode(GameMode.ADVENTURE);
         if(e.getPlayer().getWorld().getName().equals("lobby")){
             MiniHub.giveItems(p);
