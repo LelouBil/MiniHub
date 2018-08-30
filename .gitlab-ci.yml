@@ -6,12 +6,13 @@ variables:
 
 cache:
   paths:
-  - .m2/repository/
-  - target/
+  - .m2/repository/*
+  - target/*
 
 stages:
 - build
 - test
+- package
 - mvn_deploy
 - lotary_deploy
 
@@ -19,7 +20,7 @@ stages:
 build:
   stage: build
   script:
-  - rm -rf target/*
+  - mvn clean
   - mvn $MAVEN_CLI_OPTS compile
 
 test:
@@ -27,12 +28,22 @@ test:
   script:
   - mvn $MAVEN_CLI_OPTS test
 
+package:
+  stage: package
+  script:
+  - mvn $MAVEN_CLI_OPTS package
+
 deploy_mvn:
   stage: mvn_deploy
   script:
   - mvn $MAVEN_CLI_OPTS deploy
+  - cp target/*-jar-with-dependencies.jar ./
   only:
-  - master
+  - tags
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME-jar"
+    paths:
+    - ./*-jar-with-dependencies.jar
 
 deploy_test:
   stage: lotary_deploy
@@ -47,8 +58,9 @@ deploy_prod:
   script:
   - echo "Push vers les serveurs"
   - lotarydeploy prod
+  dependencies:
+  - deploy_mvn
   environment:
     name: Prod
   only:
-  - master
   - tags
