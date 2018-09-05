@@ -170,18 +170,19 @@ public class Listeners implements Listener {
         Bukkit.getWorlds().forEach(w -> {
             if(w.getName().equals(worldName)) {
                 w.getPlayers().forEach(player -> {
+                    if(player == null) return;
                     if(MiniHub.isNotMod(p))player.showPlayer(p);
                     if(MiniHub.isNotMod(player))p.showPlayer(player);
                 });
             }
             else {
                 w.getPlayers().forEach(player -> {
+                    if(player == null) return;
                     player.hidePlayer(p);
                     p.hidePlayer(player);
                 });
             }
         });
-        MiniHub.isNotMod(p);
     }
 
     @EventHandler
