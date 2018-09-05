@@ -2,6 +2,8 @@ package fr.leloubil.minihub;
 
 import fr.leloubil.minihub.interfaces.Game;
 import lombok.Getter;
+import net.lotary.modération.mods.ModManager;
+import net.lotary.modération.mods.ModPlayer;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import org.bukkit.*;
@@ -243,5 +245,12 @@ public final class MiniHub extends JavaPlugin {
             p.getInventory().setItem(4,bousolle);
             p.getInventory().setItem(0,MiniHub.getHidelobmush());
         }
+    }
+
+    public static boolean isNotMod(Player p){
+        if(!ModManager.mods.containsKey(p)) return true;
+        ModPlayer modPlayer = ModManager.mods.get(p);
+        if(modPlayer == null) return true;
+        return modPlayer.isInModerationMod();
     }
 }

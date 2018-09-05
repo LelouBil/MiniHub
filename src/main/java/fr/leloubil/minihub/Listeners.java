@@ -3,7 +3,6 @@ package fr.leloubil.minihub;
 import fr.leloubil.minihub.interfaces.Game;
 import net.lotary.modération.events.ModJoinEvent;
 import net.lotary.modération.events.ModLeaveEvent;
-import net.lotary.modération.mods.ModManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -145,11 +144,11 @@ public class Listeners implements Listener {
                 player.getWorld().getPlayers().forEach(player::hidePlayer);
                 if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getHidemush())){
                     MiniHub.games.keySet().forEach(u -> {
-                        if(!ModManager.mods.get(Bukkit.getPlayer(u)).isInModerationMod())player.showPlayer(Bukkit.getPlayer(u));
+                        if(MiniHub.isNotMod(Bukkit.getPlayer(u)))player.showPlayer(Bukkit.getPlayer(u));
                     });
                 }else if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getShowmush())){
                     MiniHub.games.get(player.getUniqueId()).getPlayers().forEach(player1 -> {
-                        if(!ModManager.mods.get(player1).isInModerationMod()) player.showPlayer(player1);
+                        if(MiniHub.isNotMod(player1)) player.showPlayer(player1);
                     });
                 }
             }
@@ -171,8 +170,8 @@ public class Listeners implements Listener {
         Bukkit.getWorlds().forEach(w -> {
             if(w.getName().equals(worldName)) {
                 w.getPlayers().forEach(player -> {
-                    if(!ModManager.mods.get(p).isInModerationMod())player.showPlayer(p);
-                    if(!ModManager.mods.get(player).isInModerationMod())p.showPlayer(player);
+                    if(MiniHub.isNotMod(p))player.showPlayer(p);
+                    if(MiniHub.isNotMod(player))p.showPlayer(player);
                 });
             }
             else {
@@ -182,6 +181,7 @@ public class Listeners implements Listener {
                 });
             }
         });
+        MiniHub.isNotMod(p);
     }
 
     @EventHandler
