@@ -267,6 +267,14 @@ public class Listeners implements Listener {
         if(!e.getWhoClicked().getWorld().getName().equals("lobby") || e.getWhoClicked().getGameMode() != GameMode.ADVENTURE) return;
         if(e.getCurrentItem() == null) return;
         e.setCancelled(true);
+        if(e.getCurrentItem().isSimilar(MiniHub.boosterMenu)){
+            MiniHub.openBoostersGui((Player) e.getWhoClicked());
+            return;
+        }
+        if(e.getClickedInventory().getName().equals(MiniHub.BOOSTER_GUI_NAME)){
+            MiniHub.boosterGuiListener(e);
+            return;
+        }
         if(e.getCurrentItem().isSimilar(bousolle)) {
             setBousolle();
             e.getWhoClicked().openInventory(bousolleInv);

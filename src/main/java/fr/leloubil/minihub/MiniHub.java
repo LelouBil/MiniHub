@@ -1,7 +1,11 @@
 package fr.leloubil.minihub;
 
+import com.google.common.collect.ImmutableMap;
 import fr.leloubil.minihub.interfaces.Game;
 import lombok.Getter;
+import net.lotary.lotaryapi.utils.CustomPlayer;
+import net.lotary.lotaryapi.utils.ItemBuilder;
+import net.lotary.lotaryapi.utils.LotaBooster;
 import net.lotary.modération.mods.ModManager;
 import net.lotary.modération.mods.ModPlayer;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -11,6 +15,9 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -22,12 +29,14 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 import static fr.leloubil.minihub.Listeners.bousolle;
 
 public final class MiniHub extends JavaPlugin {
 
 
+    public static final String BOOSTER_GUI_NAME = ChatColor.AQUA + "BOOSTERS !";
     public static HashMap<UUID,Game> games = new HashMap<>();
 
 
@@ -37,8 +46,9 @@ public final class MiniHub extends JavaPlugin {
 
     @Getter
     public static ArrayList<MiniIcon> minigames = new ArrayList<>();
+    public static ItemStack boosterMenu = new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.GOLD + "BOOSTERS !").make();
 
-
+    private static Supplier<Inventory> BOOSTERS_INVENTORY = () -> Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_GUI_NAME);
 
     @Getter
     public static ItemStack hidemush = new ItemStack(Material.BROWN_MUSHROOM);
@@ -243,6 +253,7 @@ public final class MiniHub extends JavaPlugin {
         } else {
             p.getInventory().setHeldItemSlot(5);
             p.getInventory().setItem(4,bousolle);
+            p.getInventory().setItem(2,boosterMenu);
             p.getInventory().setItem(0,MiniHub.getHidelobmush());
         }
     }
@@ -252,5 +263,44 @@ public final class MiniHub extends JavaPlugin {
         ModPlayer modPlayer = ModManager.mods.get(p);
         if(modPlayer == null) return true;
         return modPlayer.isInModerationMod();
+    }
+
+    static final ImmutableMap<String,String> messageLoreMap = ImmutableMap.<String, String>builder()
+            .put("ALREADY-ONE",ChatColor.BLUE + "Ce booster est déja activé !")
+            .put("TIME-NOT-PASSED",ChatColor.BLUE + "Tu ne peut plus activer ce booster aujourd'hui !")
+            .put("GOOD","Tu peut activer ce booster !")
+            .build();
+
+    static void openBoostersGui(Player p){
+        Inventory inv = BOOSTERS_INVENTORY.get();
+        CustomPlayer player = CustomPlayer.get(p);
+        List<LotaBooster> boosterList = player.getBoosters();
+        for (int i = 0; i < boosterList.size(); i++) {
+            LotaBooster booster = boosterList.get(i);
+            CustomPlayer.BoosterResponse response = player.canActivateBooster(booster);
+            ItemStack item = new ItemBuilder(Material.GHAST_TEAR)
+                    .name(ChatColor.AQUA + "Booster : " + ChatColor.GOLD + " x" + ChatColor.BLUE + ChatColor.BOLD + booster.getValue())
+                    .lore(booster.getDescription())
+                    .lore("Activable : " + (response.isValue() ? "Oui" : "Non"))
+                    .lore(messageLoreMap.get(response.getMessage())).make();
+            inv.setItem(i,item);
+        }
+        p.openInventory(inv);
+    }
+
+    static void boosterGuiListener(InventoryClickEvent e){
+        CustomPlayer player = CustomPlayer.get((Player) e.getWhoClicked());
+        List<LotaBooster> boosterList = player.getBoosters();
+        int slot = e.getSlot();
+        if(boosterList.size() < slot + 1) return;
+        LotaBooster clicked = boosterList.get(e.getSlot());
+        CustomPlayer.BoosterResponse response = player.canActivateBooster(clicked);
+        if(response.isValue()){
+            player.setActiveBooster(clicked);
+            player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien activé ce booster");
+        }
+        else {
+            player.sendMessage(ChatColor.RED + "Tu ne peut pas activer ce booster !");
+        }
     }
 }
