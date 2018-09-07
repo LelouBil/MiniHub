@@ -37,6 +37,9 @@ public final class MiniHub extends JavaPlugin {
 
 
     public static final String BOOSTER_GUI_NAME = ChatColor.AQUA + "BOOSTERS !";
+    public static final String BOOSTER_SHOP_NAME = ChatColor.AQUA + "Shop !";
+
+    public static final String BOOSTER_CONFIRM_NAME = ChatColor.AQUA + "Confirmer !";
     public static HashMap<UUID,Game> games = new HashMap<>();
 
 
@@ -48,8 +51,12 @@ public final class MiniHub extends JavaPlugin {
     public static ArrayList<MiniIcon> minigames = new ArrayList<>();
     public static ItemStack boosterMenu = new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.GOLD + "BOOSTERS !").make();
 
+    public static ItemStack boosterShop = new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.GOLD + "BOOSTERS shop!").make();
+
+
     private static Supplier<Inventory> BOOSTERS_INVENTORY = () -> Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_GUI_NAME);
 
+    private static Supplier<Inventory> BOOSTERS_SHOP = () -> Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_SHOP_NAME);
     @Getter
     public static ItemStack hidemush = new ItemStack(Material.BROWN_MUSHROOM);
     @Getter
@@ -62,6 +69,18 @@ public final class MiniHub extends JavaPlugin {
     public static ItemStack leavedoor = new ItemStack(Material.WOOD_DOOR);
     @Getter
     public static ItemStack toUp = new ItemStack(Material.LADDER);
+
+    private static final ItemStack CONFIRM_ITEM = new ItemBuilder(Material.INK_SACK).data(10).name(ChatColor.GREEN + "Confirmer").make();
+
+    private static final ItemStack CANCEL_ITEM = new ItemBuilder(Material.INK_SACK).data(1).name(ChatColor.RED + "Annuler").make();
+
+    private static final Supplier<Inventory> CONFIRM_INVENTORY = () -> {
+        Inventory inv = Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_CONFIRM_NAME);
+        inv.setItem(15,CONFIRM_ITEM);
+        inv.setItem(15,CANCEL_ITEM);
+        return inv;
+    };
+
     static{
         ItemMeta m = hidemush.getItemMeta();
         m.setDisplayName(ChatColor.ITALIC.toString() + ChatColor.GOLD + "Masquer les autres joueurs");
@@ -280,14 +299,86 @@ public final class MiniHub extends JavaPlugin {
             CustomPlayer.BoosterResponse response = player.canActivateBooster(booster);
             ItemBuilder item = new ItemBuilder(Material.GHAST_TEAR)
                     .name(ChatColor.AQUA + "Booster : " + ChatColor.GOLD + " x" + ChatColor.BLUE + ChatColor.BOLD + booster.getValue())
-                    .amount(response.getQuantity())
-                    .lore("Activable : " + (response.isValue() ? "Oui" : "Non"))
-                    .lore(messageLoreMap.get(response.getMessage()));
-            if(!booster.getDescription().equals("")) item.lore(booster.getDescription());
+                    .amount(response.getQuantity());
+            if(booster.getDescription().length != 0) item.lores(booster.getDescription());
+            item.lore("Activable : " + (response.isValue() ? "Oui" : "Non")).lore(messageLoreMap.get(response.getMessage()));
             if(!response.getBooster().isInfinite()) item.lore("Quantitée : " + response.getQuantity());
             inv.setItem(i,item.make());
         }
         p.openInventory(inv);
+    }
+
+    static void openBoostersShop(Player p){
+        Inventory inv = BOOSTERS_INVENTORY.get();
+        CustomPlayer player = CustomPlayer.get(p);
+        List<LotaBooster> boosterList = player.getBuyableBoosters();
+
+        for (int i = 0; i < boosterList.size(); i++) {
+            LotaBooster booster = boosterList.get(i);
+            CustomPlayer.BoosterResponse response = player.canActivateBooster(booster);
+            ItemBuilder item = new ItemBuilder(Material.GHAST_TEAR)
+                    .name(ChatColor.AQUA + "Booster : " + ChatColor.GOLD + " x" + ChatColor.BLUE + ChatColor.BOLD + booster.getValue())
+                    .amount(CustomPlayer.MAX_AMOUNT - response.getQuantity());
+            if(booster.getDescription().length != 0) item.lores(booster.getDescription());
+            item.lore("Prix : " + booster.getPrice() + " " + (booster.isLota() ? "Lotas" : "Drachmes"));
+            inv.setItem(i,item.make());
+        }
+        p.openInventory(inv);
+    }
+
+    static void boosterShopListener(InventoryClickEvent e){
+        CustomPlayer player = CustomPlayer.get((Player) e.getWhoClicked());
+        List<LotaBooster> boosterList = player.getBoosters();
+        int slot = e.getSlot();
+        if(boosterList.size() < slot + 1) return;
+        LotaBooster clicked = boosterList.get(e.getSlot());
+        openBoostersConfirm(player,clicked);
+    }
+
+    private static void openBoostersConfirm(CustomPlayer player, LotaBooster booster) {
+        Inventory inv = CONFIRM_INVENTORY.get();
+        CustomPlayer.BoosterResponse response = player.canActivateBooster(booster);
+        ItemBuilder item = new ItemBuilder(Material.GHAST_TEAR)
+                .name(ChatColor.AQUA + "Booster : " + ChatColor.GOLD + " x" + ChatColor.BLUE + ChatColor.BOLD + booster.getValue())
+                .amount(CustomPlayer.MAX_AMOUNT - response.getQuantity());
+        if(booster.getDescription().length != 0) item.lores(booster.getDescription());
+        item.lore("Prix : " + booster.getPrice() + " " + (booster.isLota() ? "Lotas" : "Drachmes"));
+        inv.setItem(7,item.make());
+        player.openInventory(inv);
+    }
+
+    static void boosterConfirmListener(InventoryClickEvent e){
+        CustomPlayer player = CustomPlayer.get((Player) e.getWhoClicked());
+        List<LotaBooster> boosterList = player.getBoosters();
+        int slot = e.getSlot();
+        if(boosterList.size() < slot + 1) return;
+        LotaBooster clicked = LotaBooster.fromDesc(e.getInventory().getItem(7));
+        if(e.getCurrentItem().isSimilar(CONFIRM_ITEM)){
+            if(clicked.isLota()) {
+                if (player.removeLotas(clicked.getPrice())){
+                    player.addBooster(clicked);
+                    player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien acheté ce booster !");
+                }
+                else {
+                    player.sendMessage(ChatColor.RED + "Tu n'a pas assez de lotas !");
+                    return;
+                }
+            }
+            else {
+                if (player.removeDrachmes(clicked.getPrice())){
+                    player.addBooster(clicked);
+                    player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien acheté ce booster !");
+                }
+                else {
+                    player.sendMessage(ChatColor.RED + "Tu n'a pas assez de lotas !");
+                    return;
+                }
+            }
+        }
+        else if(e.getCurrentItem().isSimilar(CANCEL_ITEM)) {
+            player.sendMessage(ChatColor.RED + "Bah ok");
+            player.closeInventory();
+        }
     }
 
     static void boosterGuiListener(InventoryClickEvent e){
