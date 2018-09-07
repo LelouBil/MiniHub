@@ -4,23 +4,21 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode -Dmaven.repo.local=.m2/repository"
   MAVEN_OPTS: " "
 
-cache:
-  paths:
-  - .m2/repository/*
-  - target/*
-
 stages:
 - build
 - test
-- package
 - mvn_deploy
-- lotary_deploy
+- deploy_lotary
 
+cache:
+  paths:
+  - .m2/repository/
+  - target/
 
 build:
   stage: build
   script:
-  - mvn clean
+  - rm -rf target/*
   - mvn $MAVEN_CLI_OPTS compile
 
 test:
@@ -28,39 +26,29 @@ test:
   script:
   - mvn $MAVEN_CLI_OPTS test
 
-package:
-  stage: package
-  script:
-  - mvn $MAVEN_CLI_OPTS package
-
 deploy_mvn:
   stage: mvn_deploy
   script:
   - mvn $MAVEN_CLI_OPTS deploy
-  - cp target/*-jar-with-dependencies.jar ./
   only:
-  - tags
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME-jar"
-    paths:
-    - ./*-jar-with-dependencies.jar
+  - master
 
-deploy_test:
-  stage: lotary_deploy
-  script:
-  - echo "Push vers le serveur dev"
-  - lotarydeploy dev
-  environment:
-    name: Dev
+#deploy_test:
+#  stage: test
+#  script:
+#  - echo "Push vers le serveur dev"
+#  - lotarydeploy dev
+#  environment:
+#    name: Dev
+#  only:
+#  - master
 
 deploy_prod:
-  stage: lotary_deploy
+  stage: deploy_lotary
   script:
   - echo "Push vers les serveurs"
   - lotarydeploy prod
-  dependencies:
-  - deploy_mvn
   environment:
     name: Prod
   only:
-  - tags
+  - master
