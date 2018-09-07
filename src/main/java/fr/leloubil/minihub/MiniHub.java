@@ -266,7 +266,7 @@ public final class MiniHub extends JavaPlugin {
     }
 
     static final ImmutableMap<String,String> messageLoreMap = ImmutableMap.<String, String>builder()
-            .put("ALREADY-ONE",ChatColor.BLUE + "Ce booster est déja activé !")
+            .put("ALREADY-ONE",ChatColor.BLUE + "Un booster est déja actif !")
             .put("TIME-NOT-PASSED",ChatColor.BLUE + "Tu ne peut plus activer ce booster aujourd'hui !")
             .put("GOOD","Tu peut activer ce booster !")
             .build();
@@ -278,12 +278,14 @@ public final class MiniHub extends JavaPlugin {
         for (int i = 0; i < boosterList.size(); i++) {
             LotaBooster booster = boosterList.get(i);
             CustomPlayer.BoosterResponse response = player.canActivateBooster(booster);
-            ItemStack item = new ItemBuilder(Material.GHAST_TEAR)
+            ItemBuilder item = new ItemBuilder(Material.GHAST_TEAR)
                     .name(ChatColor.AQUA + "Booster : " + ChatColor.GOLD + " x" + ChatColor.BLUE + ChatColor.BOLD + booster.getValue())
-                    .lore(booster.getDescription())
+                    .amount(response.getQuantity())
                     .lore("Activable : " + (response.isValue() ? "Oui" : "Non"))
-                    .lore(messageLoreMap.get(response.getMessage())).make();
-            inv.setItem(i,item);
+                    .lore(messageLoreMap.get(response.getMessage()));
+            if(!booster.getDescription().equals("")) item.lore(booster.getDescription());
+            if(!response.isInfinite()) item.lore("Quantitée : " + response.getQuantity());
+            inv.setItem(i,item.make());
         }
         p.openInventory(inv);
     }
@@ -298,6 +300,7 @@ public final class MiniHub extends JavaPlugin {
         if(response.isValue()){
             player.setActiveBooster(clicked);
             player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien activé ce booster");
+            player.removeOne(clicked);
         }
         else {
             player.sendMessage(ChatColor.RED + "Tu ne peut pas activer ce booster !");
