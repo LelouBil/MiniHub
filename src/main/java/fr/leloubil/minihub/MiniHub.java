@@ -284,7 +284,7 @@ public final class MiniHub extends JavaPlugin {
                     .lore("Activable : " + (response.isValue() ? "Oui" : "Non"))
                     .lore(messageLoreMap.get(response.getMessage()));
             if(!booster.getDescription().equals("")) item.lore(booster.getDescription());
-            if(!response.isInfinite()) item.lore("Quantitée : " + response.getQuantity());
+            if(!response.getBooster().isInfinite()) item.lore("Quantitée : " + response.getQuantity());
             inv.setItem(i,item.make());
         }
         p.openInventory(inv);
