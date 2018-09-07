@@ -305,5 +305,6 @@ public final class MiniHub extends JavaPlugin {
         else {
             player.sendMessage(ChatColor.RED + "Tu ne peut pas activer ce booster !");
         }
+        openBoostersGui(player.getPlayer());
     }
 }
