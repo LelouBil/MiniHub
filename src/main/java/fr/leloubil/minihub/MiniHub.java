@@ -129,6 +129,10 @@ public final class MiniHub extends JavaPlugin {
     public void onEnable() {
         loadConfig();
         instance = this;
+        Bukkit.getWorlds().forEach(w -> {
+            w.setTime(12000);
+            w.setGameRuleValue("doDaylightCycle","false");
+        });
         fr.leloubil.minihub.Listeners.prepareInv();
         getCommand("hub").setExecutor(new PlayerCommands());
         getCommand("leave").setExecutor(new PlayerCommands());
