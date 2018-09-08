@@ -74,6 +74,10 @@ public final class MiniHub extends JavaPlugin {
 
     private static final ItemStack CANCEL_ITEM = new ItemBuilder(Material.INK_SACK, (byte) 1).name(ChatColor.RED + "Annuler").make();
 
+    public static final ItemStack SPAWN_BED = new ItemBuilder(Material.BED).name(ChatColor.GRAY + "Retourner au spawn !").make();
+
+    public static final ItemStack LOBBY_CLOCK = new ItemBuilder(Material.WATCH).name(ChatColor.GRAY + "Aller au Lobby !").make();
+
     private static final Supplier<Inventory> CONFIRM_INVENTORY = () -> {
         Inventory inv = Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_CONFIRM_NAME);
         inv.setItem(13,CONFIRM_ITEM);

@@ -2,6 +2,7 @@ package fr.leloubil.minihub;
 
 import fr.leloubil.minihub.interfaces.Game;
 import net.lotary.lotaryapi.inventories.CustomInventory;
+import net.lotary.lotaryapi.utils.CustomPlayer;
 import net.lotary.lotaryapi.utils.ItemBuilder;
 import net.lotary.modération.events.ModJoinEvent;
 import net.lotary.modération.events.ModLeaveEvent;
@@ -283,6 +284,8 @@ public class Listeners implements Listener {
         customInventory.fillSlots(coming_soon_bars,new int[]{11,15});
         customInventory.addItem(lotawars_flint_and_steel,22);
         customInventory.addItem(shop_diamong,28);
+        customInventory.addItem(MiniHub.LOBBY_CLOCK,36);
+        customInventory.addItem(MiniHub.SPAWN_BED,44);
         bousolleInv = customInventory.build();
     }
 
@@ -329,6 +332,14 @@ public class Listeners implements Listener {
             }
             else if(e.getCurrentItem().getType().equals(Material.DIAMOND)){
                 MiniHub.openBoostersShop((Player) e.getWhoClicked());
+            }
+            else if(e.getCurrentItem().getType().equals(Material.WATCH)){
+                CustomPlayer p = CustomPlayer.get((Player) e.getWhoClicked());
+                p.connectToServer("Lobby");
+            }
+            else if(e.getCurrentItem().getType().equals(Material.BED)){
+                e.getWhoClicked().closeInventory();
+                e.getWhoClicked().teleport(new Location(Bukkit.getWorld("lobby"),0,100,0,90,0));
             }
         }
     }
