@@ -50,8 +50,6 @@ public final class MiniHub extends JavaPlugin {
 
     public static ItemStack boosterMenu = new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.GOLD + "BOOSTERS !").make();
 
-    public static ItemStack boosterShop = new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.GOLD + "BOOSTERS shop!").make();
-
 
     private static Supplier<Inventory> BOOSTERS_INVENTORY = () -> Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_GUI_NAME);
 
@@ -277,7 +275,6 @@ public final class MiniHub extends JavaPlugin {
         } else {
             p.getInventory().setHeldItemSlot(5);
             p.getInventory().setItem(4,bousolle);
-            p.getInventory().setItem(2,boosterShop);
             p.getInventory().setItem(0,MiniHub.getHidelobmush());
         }
     }
