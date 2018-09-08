@@ -20,6 +20,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -111,6 +112,12 @@ public class Listeners implements Listener {
         }
     }
 
+
+    @EventHandler
+    public void onWeatherChange(WeatherChangeEvent e){
+        if(e.toWeatherState()) e.setCancelled(true);
+    }
+
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e){
         Player p = e.getPlayer();
@@ -118,7 +125,6 @@ public class Listeners implements Listener {
         if(!notClear.contains(p.getUniqueId())) {
             p.setHealth(20);
             p.setFoodLevel(20);
-
             e.getPlayer().setGameMode(GameMode.ADVENTURE);
             if (e.getPlayer().getWorld().getName().equals("lobby")) {
                 MiniHub.giveItems(p);
