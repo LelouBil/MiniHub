@@ -310,7 +310,7 @@ public final class MiniHub extends JavaPlugin {
     }
 
     static void openBoostersShop(Player p){
-        Inventory inv = BOOSTERS_INVENTORY.get();
+        Inventory inv = BOOSTERS_SHOP.get();
         CustomPlayer player = CustomPlayer.get(p);
         List<LotaBooster> boosterList = player.getBuyableBoosters();
 
@@ -329,7 +329,7 @@ public final class MiniHub extends JavaPlugin {
 
     static void boosterShopListener(InventoryClickEvent e){
         CustomPlayer player = CustomPlayer.get((Player) e.getWhoClicked());
-        List<LotaBooster> boosterList = player.getBoosters();
+        List<LotaBooster> boosterList = player.getBuyableBoosters();
         int slot = e.getSlot();
         if(boosterList.size() < slot + 1) return;
         LotaBooster clicked = boosterList.get(e.getSlot());
