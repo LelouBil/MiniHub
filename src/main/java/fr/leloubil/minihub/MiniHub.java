@@ -283,7 +283,7 @@ public final class MiniHub extends JavaPlugin {
         if(!ModManager.mods.containsKey(p)) return true;
         ModPlayer modPlayer = ModManager.mods.get(p);
         if(modPlayer == null) return true;
-        return modPlayer.isInModerationMod();
+        return !modPlayer.isInModerationMod();
     }
 
     static final ImmutableMap<String,String> messageLoreMap = ImmutableMap.<String, String>builder()
