@@ -1,12 +1,12 @@
 package fr.leloubil.minihub;
 
 import fr.leloubil.minihub.interfaces.Game;
+import net.lotary.lotaryapi.inventories.CustomInventory;
+import net.lotary.lotaryapi.utils.ItemBuilder;
 import net.lotary.modération.events.ModJoinEvent;
 import net.lotary.modération.events.ModLeaveEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 public class Listeners implements Listener {
@@ -37,7 +36,6 @@ public class Listeners implements Listener {
         bousolleMeta.setDisplayName(ChatColor.DARK_PURPLE + "Mini-Jeux");
         bousolleMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Bruh"));
         bousolle.setItemMeta(bousolleMeta);
-        setBousolle();
     }
 
 
@@ -207,7 +205,6 @@ public class Listeners implements Listener {
         if(!e.getPlayer().getWorld().getName().equals("lobby") || !e.getPlayer().getGameMode().equals(GameMode.ADVENTURE)) return;
         if(e.getItem() == null) return;
         if(e.getItem().isSimilar(bousolle)){
-            setBousolle();
             e.getPlayer().openInventory(bousolleInv);
             return;
         }
@@ -251,13 +248,18 @@ public class Listeners implements Listener {
     }
 
     static void setBousolle() {
-        if(bousolleInv.getItem(0) == null){
-            final int[] in = {0};
-            MiniHub.getMinigames().forEach((i) -> {
-                bousolleInv.setItem(in[0],i.getItemStack());
-                in[0]++;
-            });
-        }
+        ItemStack blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE).data(11).name("").make();
+        ItemStack light_blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE).data(3).name("").make();
+        ItemStack coming_soon_bars = new ItemBuilder(Material.IRON_BARDING).name(ChatColor.ITALIC.toString() + ChatColor.AQUA + "Coming Soon...").enchantment(Enchantment.SILK_TOUCH).make();
+        ItemStack lotawars_flint_and_steel = new ItemBuilder(Material.FLINT_AND_STEEL).name(ChatColor.BOLD.toString() + ChatColor.GOLD + "LotaWars").make();
+        ItemStack shop_diamong = new ItemBuilder(Material.DIAMOND).name(ChatColor.BOLD.toString() + ChatColor.BLUE + "Boosters !").make();
+        CustomInventory customInventory = new CustomInventory(MiniHub.getInstance(),ChatColor.GOLD + "Mini-Jeux !",false,null,ChatColor.GOLD + "Mini-Jeux !",45);
+        customInventory.fill(blue_glass_pane);
+        customInventory.fillSlots(light_blue_glass_pane, new int[]{10,16,19,20,21,23,24,25,29,33});
+        customInventory.fillSlots(coming_soon_bars,new int[]{11,15});
+        customInventory.addItem(lotawars_flint_and_steel,22);
+        customInventory.addItem(shop_diamong,28);
+        bousolleInv = customInventory.build();
     }
 
     @EventHandler
@@ -297,16 +299,17 @@ public class Listeners implements Listener {
             return;
         }
         if(e.getCurrentItem().isSimilar(bousolle)) {
-            setBousolle();
             e.getWhoClicked().openInventory(bousolleInv);
             return;
         }
         if(e.getInventory().equals(bousolleInv)){
-            e.getWhoClicked().closeInventory();
-
-            Optional<MiniIcon> icon = MiniHub.getMinigames().stream().filter(ic -> ic.getItemStack().equals(e.getCurrentItem())).findFirst();
-            if(!icon.isPresent()) return;
-            e.getWhoClicked().teleport(icon.get().getLocation());
+            if(e.getCurrentItem().getType().equals(Material.FLINT_AND_STEEL)){
+                e.getWhoClicked().closeInventory();
+                e.getWhoClicked().teleport(new Location(Bukkit.getWorld("lobby"),-88,97,91,-30,0));
+            }
+            else if(e.getCurrentItem().getType().equals(Material.DIAMOND)){
+                MiniHub.openBoostersShop((Player) e.getWhoClicked());
+            }
         }
     }
 

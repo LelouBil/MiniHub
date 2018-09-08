@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 import static fr.leloubil.minihub.Listeners.bousolle;
+import static fr.leloubil.minihub.Listeners.setBousolle;
 
 public final class MiniHub extends JavaPlugin {
 
@@ -47,8 +48,6 @@ public final class MiniHub extends JavaPlugin {
     public static Location lobby;
 
 
-    @Getter
-    public static ArrayList<MiniIcon> minigames = new ArrayList<>();
     public static ItemStack boosterMenu = new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.GOLD + "BOOSTERS !").make();
 
     public static ItemStack boosterShop = new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.GOLD + "BOOSTERS shop!").make();
@@ -70,13 +69,16 @@ public final class MiniHub extends JavaPlugin {
     @Getter
     public static ItemStack toUp = new ItemStack(Material.LADDER);
 
+    @Getter
+    private static MiniHub instance;
+
     private static final ItemStack CONFIRM_ITEM = new ItemBuilder(Material.INK_SACK).data(10).name(ChatColor.GREEN + "Confirmer").make();
 
     private static final ItemStack CANCEL_ITEM = new ItemBuilder(Material.INK_SACK).data(1).name(ChatColor.RED + "Annuler").make();
 
     private static final Supplier<Inventory> CONFIRM_INVENTORY = () -> {
         Inventory inv = Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_CONFIRM_NAME);
-        inv.setItem(15,CONFIRM_ITEM);
+        inv.setItem(13,CONFIRM_ITEM);
         inv.setItem(15,CANCEL_ITEM);
         return inv;
     };
@@ -128,6 +130,7 @@ public final class MiniHub extends JavaPlugin {
     @Override
     public void onEnable() {
         loadConfig();
+        instance = this;
         fr.leloubil.minihub.Listeners.prepareInv();
         getCommand("hub").setExecutor(new PlayerCommands());
         getCommand("leave").setExecutor(new PlayerCommands());
@@ -138,10 +141,11 @@ public final class MiniHub extends JavaPlugin {
         saveDefaultConfig();
         if(Bukkit.getWorld("lobby") == null) Bukkit.createWorld(new WorldCreator("lobby"));
         lobby = StrToLocation(getConfig().getString("spawn"));
-        for (String s : getConfig().getStringList("minigames")) {
-            if(s.split("-->").length == 1) minigames.add(new MiniIcon(StringToItemStack(s.split("-->")[0]),lobby));
-            else minigames.add(new MiniIcon(StringToItemStack(s.split("-->")[0]),StrToLocation(s.split("-->")[1])));
-        }
+        buildInventory();
+    }
+
+    private void buildInventory() {
+        setBousolle();
     }
 
     @Override
