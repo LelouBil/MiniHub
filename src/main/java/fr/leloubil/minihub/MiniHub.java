@@ -101,14 +101,14 @@ public final class MiniHub extends JavaPlugin {
         lore = new ArrayList<>();
         lore.add("Clique pour cacher les joueurs !");
         m.setLore(lore);
-        hidemush.setItemMeta(m);
+        hidelobmush.setItemMeta(m);
 
         me = showlobmush.getItemMeta();
         me.setDisplayName(ChatColor.ITALIC.toString() + ChatColor.YELLOW + "Afficher les autres joueurs");
         lorrr = new ArrayList<>();
         lorrr.add("Clique pour afficher les joueurs !");
         me.setLore(lorrr);
-        showmush.setItemMeta(me);
+        showlobmush.setItemMeta(me);
 
         ItemMeta le = leavedoor.getItemMeta();
         le.setDisplayName(ChatColor.ITALIC.toString() + ChatColor.DARK_RED + "Quitter");
