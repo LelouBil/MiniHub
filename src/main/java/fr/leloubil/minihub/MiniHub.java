@@ -70,9 +70,9 @@ public final class MiniHub extends JavaPlugin {
     @Getter
     private static MiniHub instance;
 
-    private static final ItemStack CONFIRM_ITEM = new ItemBuilder(Material.INK_SACK).data(10).name(ChatColor.GREEN + "Confirmer").make();
+    private static final ItemStack CONFIRM_ITEM = new ItemBuilder(Material.INK_SACK, (byte) 10).name(ChatColor.GREEN + "Confirmer").make();
 
-    private static final ItemStack CANCEL_ITEM = new ItemBuilder(Material.INK_SACK).data(1).name(ChatColor.RED + "Annuler").make();
+    private static final ItemStack CANCEL_ITEM = new ItemBuilder(Material.INK_SACK, (byte) 1).name(ChatColor.RED + "Annuler").make();
 
     private static final Supplier<Inventory> CONFIRM_INVENTORY = () -> {
         Inventory inv = Bukkit.createInventory(null,InventoryType.CHEST,BOOSTER_CONFIRM_NAME);
@@ -353,26 +353,13 @@ public final class MiniHub extends JavaPlugin {
         CustomPlayer player = CustomPlayer.get((Player) e.getWhoClicked());
         LotaBooster clicked = LotaBooster.fromDesc(e.getInventory().getItem(7));
         if(e.getCurrentItem().isSimilar(CONFIRM_ITEM)){
-            if(clicked.isLota()) {
-                if (player.removeLotas(clicked.getPrice())){
-                    player.addBooster(clicked);
-                    player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien acheté ce booster !");
-                }
-                else {
-                    player.sendMessage(ChatColor.RED + "Tu n'a pas assez de lotas !");
-                    return;
-                }
-            }
-            else {
-                if (player.removeDrachmes(clicked.getPrice())){
-                    player.addBooster(clicked);
-                    player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien acheté ce booster !");
-                }
-                else {
-                    player.sendMessage(ChatColor.RED + "Tu n'a pas assez de lotas !");
-                    return;
-                }
-            }
+             if (player.remove(clicked.getMoneyType(),clicked.getPrice())){
+                 player.addBooster(clicked);
+                 player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien acheté ce booster !");
+             }
+             else {
+                 player.sendMessage(ChatColor.RED + "Tu n'a pas assez de " + (clicked.isLota() ? "lotas" : "drachmes") + " !");
+             }
         }
         else if(e.getCurrentItem().isSimilar(CANCEL_ITEM)) {
             player.sendMessage(ChatColor.RED + "Bah ok");
