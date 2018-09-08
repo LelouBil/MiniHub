@@ -269,7 +269,7 @@ public final class MiniHub extends JavaPlugin {
         if(MiniHub.games.containsKey(p.getUniqueId())){
             p.getInventory().setHeldItemSlot(1);
             p.getInventory().setItem(0,MiniHub.getHidemush());
-            p.getInventory().setItem(2,boosterMenu);
+            p.getInventory().setItem(6,boosterMenu);
             p.getInventory().setItem(7,MiniHub.getToUp());
             p.getInventory().setItem(8,MiniHub.getLeavedoor());
         } else {
