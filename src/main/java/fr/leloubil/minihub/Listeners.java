@@ -276,7 +276,8 @@ public class Listeners implements Listener {
         ItemStack blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE, (byte) 11).name("").make();
         ItemStack light_blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE,(byte) 3).name("").make();
         ItemStack coming_soon_bars = new ItemBuilder(Material.IRON_FENCE).name(ChatColor.ITALIC.toString() + ChatColor.AQUA + "Coming Soon...").enchantment(Enchantment.SILK_TOUCH).make();
-        ItemStack lotawars_flint_and_steel = new ItemBuilder(Material.FLINT_AND_STEEL).name(ChatColor.BOLD.toString() + ChatColor.GOLD + "LotaWars").make();
+        ItemStack lotawars_flint_and_steel = new ItemBuilder(Material.FLINT_AND_STEEL).name(ChatColor.BOLD.toString() + ChatColor.GOLD + "LotaWar").lores(new String[]{"&c&lObjectif:&r Marquer &43 points &r","soit en &6brulant le Drapeau adverse &r","soit en &6tuant les PNJ &r!",
+                "&a&nEffectif&r&2: &r &e2v2 &r• &e4v4 &r• &e8v8 &r• &e16v16"}).make();
         ItemStack shop_diamong = new ItemBuilder(Material.DIAMOND).name(ChatColor.BOLD.toString() + ChatColor.BLUE + "Boosters !").make();
         CustomInventory customInventory = new CustomInventory(MiniHub.getInstance(),ChatColor.GOLD + "Mini-Jeux !",false,null,ChatColor.GOLD + "Mini-Jeux !",45);
         customInventory.fill(blue_glass_pane);
