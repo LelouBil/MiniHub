@@ -350,9 +350,6 @@ public final class MiniHub extends JavaPlugin {
 
     static void boosterConfirmListener(InventoryClickEvent e){
         CustomPlayer player = CustomPlayer.get((Player) e.getWhoClicked());
-        List<LotaBooster> boosterList = player.getBoosters();
-        int slot = e.getSlot();
-        if(boosterList.size() < slot + 1) return;
         LotaBooster clicked = LotaBooster.fromDesc(e.getInventory().getItem(7));
         if(e.getCurrentItem().isSimilar(CONFIRM_ITEM)){
             if(clicked.isLota()) {
