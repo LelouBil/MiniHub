@@ -356,6 +356,7 @@ public final class MiniHub extends JavaPlugin {
              if (player.remove(clicked.getMoneyType(),clicked.getPrice())){
                  player.addBooster(clicked);
                  player.sendMessage(ChatColor.GREEN + "Bravo , tu as bien acheté ce booster !");
+                 player.closeInventory();
              }
              else {
                  player.sendMessage(ChatColor.RED + "Tu n'a pas assez de " + (clicked.isLota() ? "lotas" : "drachmes") + " !");
