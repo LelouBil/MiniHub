@@ -5,6 +5,7 @@ import net.lotary.lotaryapi.inventories.CustomInventory;
 import net.lotary.lotaryapi.utils.ItemBuilder;
 import net.lotary.modération.events.ModJoinEvent;
 import net.lotary.modération.events.ModLeaveEvent;
+import net.lotary.modération.events.ModRandomTPEvent;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -23,7 +24,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class Listeners implements Listener {
@@ -111,17 +114,36 @@ public class Listeners implements Listener {
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e){
         Player p = e.getPlayer();
-        p.setHealth(20);
-        p.setFoodLevel(20);
         updateHideShow();
-        e.getPlayer().setGameMode(GameMode.ADVENTURE);
-        if(e.getPlayer().getWorld().getName().equals("lobby")){
-            MiniHub.giveItems(p);
+        if(!notClear.contains(p.getUniqueId())) {
+            p.setHealth(20);
+            p.setFoodLevel(20);
+
+            e.getPlayer().setGameMode(GameMode.ADVENTURE);
+            if (e.getPlayer().getWorld().getName().equals("lobby")) {
+                MiniHub.giveItems(p);
+            }
         }
+        notClear.remove(p.getUniqueId());
     }
 
     @EventHandler
     public void onModJoin(ModJoinEvent e){
+        if(MiniHub.games.containsKey(e.getPlayer().getUniqueId())){
+            e.setCancelled(true);
+            e.getPlayer().sendMessage(ChatColor.RED + "Tu ne peut pas faire ceci en partie !");
+        }
+        updateHideShow();
+    }
+
+    private List<UUID> notClear = new ArrayList<>();
+
+    @EventHandler
+    public void onModRandomTP(ModRandomTPEvent e){
+        Player target = e.getTargetPlayer();
+        if(MiniHub.games.containsKey(target.getUniqueId())){
+            notClear.add(e.getPlayer().getUniqueId());
+        }
         updateHideShow();
     }
 
