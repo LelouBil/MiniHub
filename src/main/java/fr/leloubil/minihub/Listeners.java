@@ -244,9 +244,9 @@ public class Listeners implements Listener {
     }
 
     static void setBousolle() {
-        ItemStack blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE).data(11).name("").make();
-        ItemStack light_blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE).data(3).name("").make();
-        ItemStack coming_soon_bars = new ItemBuilder(Material.IRON_BARDING).name(ChatColor.ITALIC.toString() + ChatColor.AQUA + "Coming Soon...").enchantment(Enchantment.SILK_TOUCH).make();
+        ItemStack blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE, (byte) 11).name("").make();
+        ItemStack light_blue_glass_pane = new ItemBuilder(Material.STAINED_GLASS_PANE,(byte) 3).name("").make();
+        ItemStack coming_soon_bars = new ItemBuilder(Material.IRON_FENCE).name(ChatColor.ITALIC.toString() + ChatColor.AQUA + "Coming Soon...").enchantment(Enchantment.SILK_TOUCH).make();
         ItemStack lotawars_flint_and_steel = new ItemBuilder(Material.FLINT_AND_STEEL).name(ChatColor.BOLD.toString() + ChatColor.GOLD + "LotaWars").make();
         ItemStack shop_diamong = new ItemBuilder(Material.DIAMOND).name(ChatColor.BOLD.toString() + ChatColor.BLUE + "Boosters !").make();
         CustomInventory customInventory = new CustomInventory(MiniHub.getInstance(),ChatColor.GOLD + "Mini-Jeux !",false,null,ChatColor.GOLD + "Mini-Jeux !",45);
