@@ -48,10 +48,14 @@ public class Listeners implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
         e.setJoinMessage("");
-        MiniHub.games.keySet().forEach(p -> {
-            MiniHub.hideBoth(e.getPlayer(),Bukkit.getPlayer(p));
-        });
+
         Player p = e.getPlayer();
+        p.getWorld().getPlayers().forEach(pl -> {
+            if(MiniHub.games.containsKey(pl.getUniqueId())){
+                MiniHub.hideBoth(e.getPlayer(),p);
+            }
+            if(!MiniHub.wantShow(pl)) pl.hidePlayer(p);
+        });
         p.getInventory().clear();
         p.getEquipment().clear();
         p.setFireTicks(0);
