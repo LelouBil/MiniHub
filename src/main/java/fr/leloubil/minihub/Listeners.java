@@ -50,12 +50,7 @@ public class Listeners implements Listener {
         e.setJoinMessage("");
 
         Player p = e.getPlayer();
-        p.getWorld().getPlayers().forEach(pl -> {
-            if(MiniHub.games.containsKey(pl.getUniqueId())){
-                MiniHub.hideBoth(e.getPlayer(),p);
-            }
-            if(!MiniHub.wantShow(pl)) pl.hidePlayer(p);
-        });
+
         p.getInventory().clear();
         p.getEquipment().clear();
         p.setFireTicks(0);
@@ -63,6 +58,12 @@ public class Listeners implements Listener {
         p.setHealth(20);
         MiniHub.giveItems(p);
         e.getPlayer().teleport(MiniHub.getLobby());
+        p.getWorld().getPlayers().forEach(pl -> {
+            if(MiniHub.games.containsKey(pl.getUniqueId())){
+                MiniHub.hideBoth(e.getPlayer(),p);
+            }
+            if(!MiniHub.wantShow(pl)) pl.hidePlayer(p);
+        });
         e.getPlayer().setGameMode(GameMode.ADVENTURE);
         e.getPlayer().setBedSpawnLocation(MiniHub.getLobby(),true);
         Bukkit.getWorld("lobby").getPlayers().stream().filter(pl -> !MiniHub.games.containsKey(pl.getUniqueId())).forEach(pl -> pl.sendMessage(e.getPlayer().getDisplayName() + " s'est connecté !"));
