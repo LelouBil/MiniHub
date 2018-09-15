@@ -393,4 +393,15 @@ public final class MiniHub extends JavaPlugin {
         }
         openBoostersGui(player.getPlayer());
     }
+
+    public static void hideBoth(Player pl,Player p){
+        pl.hidePlayer(p);
+        p.hidePlayer(pl);
+    }
+
+
+    public static void showBoth(Player pl,Player p){
+        if(isNotMod(p))pl.showPlayer(p);
+        if(isNotMod(pl))p.showPlayer(pl);
+    }
 }

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Listeners implements Listener {
 
@@ -47,9 +48,15 @@ public class Listeners implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
         e.setJoinMessage("");
-        updateHideShow();
+        MiniHub.games.keySet().forEach(p -> {
+            MiniHub.hideBoth(e.getPlayer(),Bukkit.getPlayer(p));
+        });
         Player p = e.getPlayer();
         p.getInventory().clear();
+        p.getEquipment().clear();
+        p.setFireTicks(0);
+        p.setFoodLevel(20);
+        p.setHealth(20);
         MiniHub.giveItems(p);
         e.getPlayer().teleport(MiniHub.getLobby());
         e.getPlayer().setGameMode(GameMode.ADVENTURE);
@@ -92,7 +99,6 @@ public class Listeners implements Listener {
         e.getPlayer().getInventory().setBoots(null);
 
         e.setQuitMessage("");
-        updateHideShow();
         if(e.getPlayer().getLocation().getWorld().getName().equals("lobby")){
             Bukkit.getWorld("lobby").getPlayers().forEach(p -> {
                 if(!MiniHub.games.containsKey(p.getUniqueId())) p.sendMessage(e.getPlayer().getDisplayName() + " est parti !");
@@ -122,7 +128,12 @@ public class Listeners implements Listener {
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e){
         Player p = e.getPlayer();
-        updateHideShow();
+        e.getFrom().getPlayers().forEach(pe -> {
+            MiniHub.hideBoth(e.getPlayer(),p);
+        });
+        MiniHub.games.keySet().forEach(pe -> {
+            MiniHub.showBoth(e.getPlayer(),p);
+        });
         if(!notClear.contains(p.getUniqueId())) {
             p.setHealth(20);
             p.setFoodLevel(20);
@@ -139,8 +150,8 @@ public class Listeners implements Listener {
         if(MiniHub.games.containsKey(e.getPlayer().getUniqueId())){
             e.setCancelled(true);
             e.getPlayer().sendMessage(ChatColor.RED + "Tu ne peut pas faire ceci en partie !");
+            return;
         }
-        updateHideShow();
     }
 
     private List<UUID> notClear = new ArrayList<>();
@@ -150,67 +161,28 @@ public class Listeners implements Listener {
         Player target = e.getTargetPlayer();
         if(MiniHub.games.containsKey(target.getUniqueId())){
             notClear.add(e.getPlayer().getUniqueId());
+            Game g = MiniHub.games.get(target.getUniqueId());
+            if(g.isLobby()){
+                g.getPlayers().forEach(pl -> e.getPlayer().showPlayer(pl));
+            }
         }
-        updateHideShow();
+
     }
 
     @EventHandler
     public void onModLeave(ModLeaveEvent e){
-        updateHideShow();
-    }
-
-    public static void updateHideShow() {
-        Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
-        for (Player player : players) {
-            perWorld(player);
-        }
-
-        Bukkit.getWorld("lobby").getPlayers().forEach(player -> {
-
-            if(MiniHub.games.containsKey(player.getUniqueId())){
-                player.getWorld().getPlayers().forEach(player::hidePlayer);
-                if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getHidemush())){
-                    MiniHub.games.keySet().forEach(u -> {
-                        if(MiniHub.isNotMod(Bukkit.getPlayer(u)))player.showPlayer(Bukkit.getPlayer(u));
-                    });
-                }else if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).isSimilar(MiniHub.getShowmush())){
-                    MiniHub.games.get(player.getUniqueId()).getPlayers().forEach(player1 -> {
-                        if(MiniHub.isNotMod(player1)) player.showPlayer(player1);
-                    });
+        Player p = e.getPlayer();
+        if(p.getWorld().getName().equals("lobby")){
+            p.getWorld().getPlayers().forEach(pl -> {
+                if(!MiniHub.games.containsKey(pl.getUniqueId())){
+                    MiniHub.showBoth(p,pl);
                 }
-            }
-            else {
-                player.getWorld().getPlayers().forEach(player::hidePlayer);
-                player.getWorld().getPlayers().forEach(pl -> {
-                    if(!MiniHub.games.containsKey(pl.getUniqueId())) {
-                        if(player.getInventory().getItem(0) != null && player.getInventory().getItem(0).equals(MiniHub.getHidelobmush())){
-                            player.showPlayer(pl);
-                        }
-                    }
-                });
-            }
-        });
+                else MiniHub.hideBoth(p,pl);
+            });
+        }
     }
 
-    public static void perWorld(Player p) {
-        String worldName = p.getWorld().getName();
-        Bukkit.getWorlds().forEach(w -> {
-            if(w.getName().equals(worldName)) {
-                w.getPlayers().forEach(player -> {
-                    if(player == null) return;
-                    if(MiniHub.isNotMod(p))player.showPlayer(p);
-                    if(MiniHub.isNotMod(player))p.showPlayer(player);
-                });
-            }
-            else {
-                w.getPlayers().forEach(player -> {
-                    if(player == null) return;
-                    player.hidePlayer(p);
-                    p.hidePlayer(player);
-                });
-            }
-        });
-    }
+
 
     @EventHandler
     public void DropListener(PlayerDropItemEvent e){
@@ -243,22 +215,37 @@ public class Listeners implements Listener {
         }
         if(e.getItem().isSimilar(MiniHub.getHidelobmush())){
             e.getPlayer().setItemInHand(MiniHub.getShowlobmush());
-            updateHideShow();
+            e.getPlayer().getWorld().getPlayers().forEach(p -> {
+                if(!MiniHub.games.containsKey(p.getUniqueId())){
+                    e.getPlayer().hidePlayer(p);
+                }
+            });
             return;
         }
         if(e.getItem().isSimilar(MiniHub.getShowlobmush())){
             e.getPlayer().setItemInHand(MiniHub.getHidelobmush());
-            updateHideShow();
+            e.getPlayer().getWorld().getPlayers().forEach(p -> {
+                if(!MiniHub.games.containsKey(p.getUniqueId())){
+                    if(MiniHub.isNotMod(p))e.getPlayer().showPlayer(p);
+                }
+            });
             return;
         }
         if(e.getItem().isSimilar(MiniHub.getHidemush())){
             e.getPlayer().setItemInHand(MiniHub.getShowmush());
-            updateHideShow();
+            Game g  = MiniHub.games.get(e.getPlayer().getUniqueId());
+            List<UUID> uids= g.getPlayers().stream().map(Player::getUniqueId).collect(Collectors.toList());
+            MiniHub.games.keySet().forEach(uid -> {
+                if(!uids.contains(uid)) e.getPlayer().hidePlayer(Bukkit.getPlayer(uid));
+            });
             return;
         }
         if(e.getItem().isSimilar(MiniHub.getShowmush())){
             e.getPlayer().setItemInHand(MiniHub.getHidemush());
-            updateHideShow();
+            Game g  = MiniHub.games.get(e.getPlayer().getUniqueId());
+            g.getPlayers().forEach(uid -> {
+                if(MiniHub.isNotMod(uid)) e.getPlayer().showPlayer(uid);
+            });
         }
         if(e.getItem().isSimilar(MiniHub.getToUp())){
             if(! MiniHub.games.containsKey(e.getPlayer().getUniqueId())) return;
