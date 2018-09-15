@@ -1,0 +1,63 @@
+plugins {
+    id 'net.linguica.maven-settings' version '0.5'
+    id 'io.franzbecker.gradle-lombok' version '1.14'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
+import org.apache.tools.ant.filters.*
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+group = 'fr.leloubil'
+version = '2.2-SNAPSHOT'
+
+description = """MiniHub"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+processResources {
+    filter ReplaceTokens, tokens: [
+            "version": project.property("version")
+    ]
+}
+
+publishing {
+    publications{
+        mavenJava(MavenPublication) {
+            artifactId = this.name
+            groupId = this.group
+        }
+    }
+    repositories {
+        maven {
+            name = "LotaMaven"
+            def releasesRepoUrl = "https://maven.lotary.net/repository/LotaMaven-Releases/"
+            def snapshotsRepoUrl = "https://maven.lotary.net/repository/LotaMaven-Snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+
+repositories {
+
+    maven {
+        name = "LotaMaven"
+        url = "https://maven.lotary.net/repository/LotaMaven/"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly group: 'org.github.paperspigot', name: 'paperspigot-api', version:'1.8.8-R0.1-SNAPSHOT'
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version:'1.8.8-R0.1-SNAPSHOT'
+    compileOnly group: 'org.bukkit', name: 'craftbukkit', version: '1.8.8-R0.1'
+    compileOnly group: 'us.myles', name: 'viaversion', version:'1.3.0'
+    compileOnly group: 'net.lotary', name: 'LotaryAPI', version:'5.0.3-SNAPSHOT'
+    compileOnly group: 'net.lotary', name: 'Moderation', version:'1.0.8-SNAPSHOT'
+}

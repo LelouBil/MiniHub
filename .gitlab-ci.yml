@@ -1,47 +1,62 @@
-image: lotaryupdater:latest
+image: lotaryupdater:gradle
 
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode -Dmaven.repo.local=.m2/repository"
-  MAVEN_OPTS: " "
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+cache:
+  paths:
+  - gradle/*
+  - .gradle/*
+  - build/*
+
 
 stages:
 - build
 - test
+- package
 - mvn_deploy
 - deploy_lotary
 
-cache:
-  paths:
-  - .m2/repository/
-  - target/
+
+
+before_script:
+- chmod +x ./gradlew
+- export GRADLE_USER_HOME=`pwd`/.gradle
+
 
 build:
   stage: build
   script:
-  - rm -rf target/*
-  - mvn $MAVEN_CLI_OPTS compile
+  - gradle clean classes
 
 test:
   stage: test
   script:
-  - mvn $MAVEN_CLI_OPTS test
+  - gradle test
+
+shadowJar:
+  stage: package
+  script:
+  - gradle shadowJar
 
 deploy_mvn:
   stage: mvn_deploy
   script:
-  - mvn $MAVEN_CLI_OPTS deploy
+  - gradle publish
   only:
   - master
 
-#deploy_test:
-#  stage: test
-#  script:
-#  - echo "Push vers le serveur dev"
-#  - lotarydeploy dev
-#  environment:
-#    name: Dev
-#  only:
-#  - master
+deploy_test:
+  stage: deploy_lotary
+  script:
+  - echo "Push vers le serveur dev"
+  - lotarydeploy dev
+  environment:
+    name: Dev
+  except:
+  - master
+  only:
+  - testing
 
 deploy_prod:
   stage: deploy_lotary
@@ -52,3 +67,5 @@ deploy_prod:
     name: Prod
   only:
   - master
+  except:
+  - testing
