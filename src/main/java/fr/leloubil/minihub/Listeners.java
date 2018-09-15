@@ -221,7 +221,7 @@ public class Listeners implements Listener {
         if(e.getItem().isSimilar(MiniHub.getHidelobmush())){
             e.getPlayer().setItemInHand(MiniHub.getShowlobmush());
             e.getPlayer().getWorld().getPlayers().forEach(p -> {
-                if(!MiniHub.games.get(p.getUniqueId()).getPlayers().contains(p)){
+                if(!MiniHub.games.containsKey(p.getUniqueId())){
                     e.getPlayer().hidePlayer(p);
                 }
             });
@@ -230,9 +230,9 @@ public class Listeners implements Listener {
         if(e.getItem().isSimilar(MiniHub.getShowlobmush())){
             e.getPlayer().setItemInHand(MiniHub.getHidelobmush());
             e.getPlayer().getWorld().getPlayers().forEach(p -> {
-                MiniHub.games.forEach((key, value) -> {
+                if(!MiniHub.games.containsKey(p.getUniqueId())){
                     if(MiniHub.isNotMod(p))e.getPlayer().showPlayer(p);
-                });
+                }
             });
             return;
         }
@@ -247,9 +247,9 @@ public class Listeners implements Listener {
         }
         if(e.getItem().isSimilar(MiniHub.getShowmush())){
             e.getPlayer().setItemInHand(MiniHub.getHidemush());
-            Game g  = MiniHub.games.get(e.getPlayer().getUniqueId());
-            g.getPlayers().forEach(uid -> {
-                if(MiniHub.isNotMod(uid)) e.getPlayer().showPlayer(uid);
+            MiniHub.games.keySet().forEach( k -> {
+                Player pl = Bukkit.getPlayer(k);
+                if(MiniHub.isNotMod(pl)) e.getPlayer().showPlayer(pl);
             });
         }
         if(e.getItem().isSimilar(MiniHub.getToUp())){
