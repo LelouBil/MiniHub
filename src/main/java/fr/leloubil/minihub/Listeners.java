@@ -221,7 +221,7 @@ public class Listeners implements Listener {
         if(e.getItem().isSimilar(MiniHub.getHidelobmush())){
             e.getPlayer().setItemInHand(MiniHub.getShowlobmush());
             e.getPlayer().getWorld().getPlayers().forEach(p -> {
-                if(!MiniHub.games.containsKey(p.getUniqueId())){
+                if(!MiniHub.games.get(p.getUniqueId()).getPlayers().contains(p)){
                     e.getPlayer().hidePlayer(p);
                 }
             });
@@ -230,9 +230,9 @@ public class Listeners implements Listener {
         if(e.getItem().isSimilar(MiniHub.getShowlobmush())){
             e.getPlayer().setItemInHand(MiniHub.getHidelobmush());
             e.getPlayer().getWorld().getPlayers().forEach(p -> {
-                if(!MiniHub.games.containsKey(p.getUniqueId())){
+                MiniHub.games.forEach((key, value) -> {
                     if(MiniHub.isNotMod(p))e.getPlayer().showPlayer(p);
-                }
+                });
             });
             return;
         }
