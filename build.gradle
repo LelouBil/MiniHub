@@ -10,7 +10,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'fr.leloubil'
-version = '2.2-SNAPSHOT'
+version = '2.5-SNAPSHOT'
 
 description = """MiniHub"""
 
