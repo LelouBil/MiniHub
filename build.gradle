@@ -10,7 +10,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'fr.leloubil'
-version = '2.5-SNAPSHOT'
+version = '2.7.1-SNAPSHOT'
 
 description = """MiniHub"""
 
@@ -31,6 +31,8 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId = this.name
             groupId = this.group
+            artifact jar
+            artifact shadowJar
         }
     }
     repositories {

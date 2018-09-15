@@ -1,7 +1,8 @@
 name: MiniHub
-version: ${project.version}
+version: @version@
 main: fr.leloubil.minihub.MiniHub
 prefix: MiniHub
+depend: [LotaryAPI]
 authors: [LelouBil]
 website: lotary.net
 commands:

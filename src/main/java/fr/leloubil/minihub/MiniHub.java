@@ -401,7 +401,13 @@ public final class MiniHub extends JavaPlugin {
 
 
     public static void showBoth(Player pl,Player p){
-        if(isNotMod(p))pl.showPlayer(p);
-        if(isNotMod(pl))p.showPlayer(pl);
+        if(isNotMod(p) && wantShow(p))pl.showPlayer(p);
+        if(isNotMod(pl) && wantShow(p))p.showPlayer(pl);
+    }
+
+    public static boolean wantShow(Player p) {
+        if(p.getInventory().getItem(0) == null) return true;
+        ItemStack i = p.getInventory().getItem(0);
+        return !i.isSimilar(showlobmush) && !i.isSimilar(showmush);
     }
 }
